@@ -6,8 +6,11 @@ import {
   keepPreviousData,
 } from "@tanstack/react-query";
 
-import type { Note, CreateNotePayload } from "../types/note";
-import type { FetchNotesResponse } from "../types/apii";
+import type {
+  Note,
+  CreateNotePayload,
+  FetchNotesResponse,
+} from "../types/note";
 
 const API_URL = "https://notehub-public.goit.study/api/notes";
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
-import css from "../styles/Header.module.css";
+import css from "./page.module.css";
 
-export default function Header() {
+const heder = () => {
   return (
     <header className={css.header}>
       <Link href="/" aria-label="Home">
@@ -10,13 +10,14 @@ export default function Header() {
       <nav aria-label="Main Navigation">
         <ul className={css.navigation}>
           <li>
-            <Link href="/">Home</Link>
+            <link href="/">Home</link>
           </li>
           <li>
-            <Link href="/notes">Notes</Link>
+            <link href="/notes">Notes</link>
           </li>
         </ul>
       </nav>
     </header>
   );
-}
+};
+export default heder;

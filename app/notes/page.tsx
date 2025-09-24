@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNotes } from "../../lib/api";
-import NoteList from "../../components/NoteList";
-import NoteForm from "../../components/NoteForm";
-import Modal from "../../components/Modal";
-import SearchBox from "../../components/SearchBox";
-import Pagination from "../../components/Pagination";
+import NoteList from "../../components/NoteList/NoteList";
+import NoteForm from "../../components/NoteForm/NoteForm";
+import Modal from "../../components/Modal/Modal";
+import SearchBox from "../../components/SearchBox/SearchBox";
+import Pagination from "../../components/Pagination/Pagination";
 import { useDebounce } from "use-debounce";
-import css from "./App.module.css";
+import css from "./page.module.css";
 
 export default function App() {
   const [searchText, setSearchText] = useState("");
