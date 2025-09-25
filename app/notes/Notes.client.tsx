@@ -3,64 +3,44 @@
 import { useState } from "react";
 import { useNotes } from "@/lib/api";
 import NoteList from "@/components/NoteList/NoteList";
-import NoteForm from "@/components/NoteForm/NoteForm";
-import Modal from "@/components/Modal/Modal";
-import SearchBox from "@/components/SearchBox/SearchBox";
-import Pagination from "@/components/Pagination/Pagination";
-import { useDebounce } from "use-debounce";
-import css from "./page.module.css";
 
 export default function NotesClient() {
-  const [searchText, setSearchText] = useState("");
-  const [debouncedSearchText] = useDebounce(searchText, 500);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
 
-  const { data, isLoading, isError } = useNotes(
-    debouncedSearchText,
-    currentPage
-  );
+  const { data, isLoading, isError } = useNotes(search, page);
 
-  const handlePageChange = (page: number) => setCurrentPage(page);
-  const handleSearchChange = (value: string) => {
-    setSearchText(value);
-    setCurrentPage(1);
-  };
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Error loading notes</p>;
 
   return (
-    <div className={css.app}>
-      <header className={css.toolbar}>
-        <SearchBox value={searchText} onChange={handleSearchChange} />
-        {!isLoading && data && data.totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={data.totalPages}
-            onPageChange={handlePageChange}
-          />
-        )}
-      </header>
+    <div>
+      <div style={{ marginBottom: "1rem" }}>
+        <input
+          type="text"
+          placeholder="Search notes..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1); 
+          }}
+        />
+      </div>
 
-      <main>
-        {isLoading && <p>Loading...</p>}
-        {isError && <p>Error loading notes.</p>}
-        {!isLoading && data?.notes.length ? (
-          <NoteList notes={data.notes} />
-        ) : (
-          !isLoading && <p>No notes found.</p>
-        )}
-      </main>
+      <NoteList notes={data?.notes || []} />
 
-      <footer>
-        <button className={css.button} onClick={() => setIsModalOpen(true)}>
-          Create note +
+      <div style={{ marginTop: "1rem" }}>
+        <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+          Prev
         </button>
-      </footer>
-
-      {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)}>
-          <NoteForm onClose={() => setIsModalOpen(false)} />
-        </Modal>
-      )}
+        <span style={{ margin: "0 1rem" }}>Page {page}</span>
+        <button
+          disabled={page === data?.totalPages}
+          onClick={() => setPage((p) => p + 1)}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }
