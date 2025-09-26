@@ -3,44 +3,49 @@
 import { useState } from "react";
 import { useNotes } from "@/lib/api";
 import NoteList from "@/components/NoteList/NoteList";
+import Pagination from "@/components/Pagination/Pagination";
+import SearchBox from "@/components/SearchBox/SearchBox";
+import Modal from "@/components/Modal/Modal";
+import NoteForm from "@/components/NoteForm/NoteForm";
+import css from "./Notes.client.module.css";
 
 export default function NotesClient() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data, isLoading, isError } = useNotes(search, page);
+  const { data, isLoading, error } = useNotes(search, page);
 
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error loading notes</p>;
+  if (isLoading) return <p>Loading, please wait...</p>;
+  if (error) return <p>Something went wrong: {error.message}</p>;
 
   return (
-    <div>
-      <div style={{ marginBottom: "1rem" }}>
-        <input
-          type="text"
-          placeholder="Search notes..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1); 
-          }}
-        />
+    <div className={css.container}>
+      <div className={css.searchAndButton}>
+        <SearchBox value={search} onChange={setSearch} />
+        <button
+          className={css.createButton}
+          onClick={() => setIsModalOpen(true)}
+        >
+          Create Note
+        </button>
       </div>
 
       <NoteList notes={data?.notes || []} />
 
-      <div style={{ marginTop: "1rem" }}>
-        <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-          Prev
-        </button>
-        <span style={{ margin: "0 1rem" }}>Page {page}</span>
-        <button
-          disabled={page === data?.totalPages}
-          onClick={() => setPage((p) => p + 1)}
-        >
-          Next
-        </button>
-      </div>
+      {data?.totalPages && data.totalPages > 1 && (
+        <Pagination
+          currentPage={page}
+          totalPages={data.totalPages}
+          onPageChange={setPage}
+        />
+      )}
+
+      {isModalOpen && (
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <NoteForm onClose={() => setIsModalOpen(false)} />
+        </Modal>
+      )}
     </div>
   );
 }

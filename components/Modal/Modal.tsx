@@ -1,4 +1,4 @@
-import css from "../styles/Modal.module.css";
+import css from "./Modal.module.css";
 
 import { useEffect, type ReactNode } from "react";
 import ReactDOM from "react-dom";

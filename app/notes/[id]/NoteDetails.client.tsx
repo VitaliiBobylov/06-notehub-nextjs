@@ -1,20 +1,15 @@
 "use client";
 
-import { useParams } from "next/navigation";
 import { useNote } from "@/lib/api";
-import type { Note } from "@/types/note";
 import css from "./NoteDetails.module.css";
 
-export default function NoteDetailsClient() {
-  const params = useParams();
-  const noteId = Number(params.id);
+type Props = { id: string };
 
-  const { data: noteData, isLoading, error } = useNote(noteId);
+export default function NoteDetailsClient({ id }: Props) {
+  const { data: note, isLoading, isError } = useNote(id);
 
   if (isLoading) return <p>Loading, please wait...</p>;
-  if (error || !noteData) return <p>Something went wrong.</p>;
-
-  const note: Note = noteData;
+  if (isError || !note) return <p>Something went wrong.</p>;
 
   return (
     <div className={css.container}>
@@ -23,9 +18,7 @@ export default function NoteDetailsClient() {
           <h2>{note.title}</h2>
         </div>
         <p className={css.content}>{note.content}</p>
-        <p className={css.date}>
-          Created: {new Date(note.createdAt).toLocaleString()}
-        </p>
+        <p className={css.date}>{note.createdAt}</p>
       </div>
     </div>
   );

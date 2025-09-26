@@ -1,7 +1,12 @@
 import "./globals.css";
-import Header from "@/app/Header/Header";
-import Footer from "@/app/Footer/Footer";
-import TanStackProvider from "../components/TanStackProvider/TanStackProvider";
+import Header from "@/components/Header/Header";
+import Footer from "@/components/Footer/Footer";
+import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
+
+export const metadata = {
+  title: "NoteHub",
+  description: "A simple note management app built with Next.js",
+};
 
 export default function RootLayout({
   children,
@@ -13,7 +18,7 @@ export default function RootLayout({
       <body>
         <TanStackProvider>
           <Header />
-          {children}
+          <main>{children}</main>
           <Footer />
         </TanStackProvider>
       </body>

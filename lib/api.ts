@@ -23,35 +23,39 @@ export async function fetchNotes(
   return data;
 }
 
-export async function fetchNoteById(id: number): Promise<Note> {
+export async function fetchNoteById(id: string): Promise<Note> {
   const { data }: AxiosResponse<Note> = await axiosInstance.get(`/${id}`);
   return data;
 }
 
 export function useNotes(search: string, page: number) {
-  return useQuery<FetchNotesResponse, Error>(["notes", search, page], () =>
-    fetchNotes(search, page)
-  );
+  return useQuery<FetchNotesResponse, Error>({
+    queryKey: ["notes", search, page],
+    queryFn: () => fetchNotes(search, page),
+  });
 }
 
-export function useNote(id: number) {
-  return useQuery<Note, Error>(["note", id], () => fetchNoteById(id));
+export function useNote(id: string) {
+  return useQuery<Note, Error>({
+    queryKey: ["note", id],
+    queryFn: () => fetchNoteById(id),
+    enabled: !!id,
+  });
 }
 
 export function useCreateNote() {
   const queryClient = useQueryClient();
-  return useMutation(
-    (newNote: CreateNotePayload) =>
+  return useMutation({
+    mutationFn: (newNote: CreateNotePayload) =>
       axiosInstance.post<Note>("", newNote).then((res) => res.data),
-    { onSuccess: () => queryClient.invalidateQueries(["notes"]) }
-  );
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notes"] }),
+  });
 }
 
 export function useDeleteNote() {
   const queryClient = useQueryClient();
-  return useMutation(
-    (id: string) =>
-      axiosInstance.delete<Note>(`/${id}`).then((res) => res.data),
-    { onSuccess: () => queryClient.invalidateQueries(["notes"]) }
-  );
+  return useMutation({
+    mutationFn: (id: string) => axiosInstance.delete(`/${id}`).then(() => id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notes"] }),
+  });
 }

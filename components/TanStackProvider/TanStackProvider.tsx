@@ -1,21 +1,29 @@
-
 "use client";
 
-import { useState } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState, ReactNode } from "react";
+import {
+  QueryClient,
+  QueryClientProvider,
+  hydrate,
+} from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 type Props = {
-  children: React.ReactNode;
+  children: ReactNode;
+  dehydratedState?: unknown;
 };
 
-const TanStackProvider = ({ children }: Props) => {
+export default function TanStackProvider({ children, dehydratedState }: Props) {
   const [queryClient] = useState(() => new QueryClient());
+
+  if (dehydratedState) {
+    hydrate(queryClient, dehydratedState);
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
       {children}
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
-};
-
-export default TanStackProvider;
+}
