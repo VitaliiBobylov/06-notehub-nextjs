@@ -17,7 +17,7 @@ export async function fetchNotes(
   const { data }: AxiosResponse<FetchNotesResponse> = await axiosInstance.get(
     "",
     {
-      params: { search, page, perPage: 12 },
+      params: { search, page, perPage: 15 },
     }
   );
   return data;
