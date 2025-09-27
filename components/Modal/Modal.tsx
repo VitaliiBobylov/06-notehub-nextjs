@@ -1,5 +1,4 @@
 import css from "./Modal.module.css";
-
 import { useEffect, type ReactNode } from "react";
 import ReactDOM from "react-dom";
 
@@ -12,11 +11,18 @@ export default function Modal({ onClose, children }: ModalProps) {
   const modalRoot = document.getElementById("modal-root") as HTMLElement;
 
   useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [onClose]);
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {

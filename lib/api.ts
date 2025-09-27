@@ -1,6 +1,6 @@
 import axios, { type AxiosResponse } from "axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Note, CreateNotePayload, FetchNotesResponse } from "@/types/note";
+import type { Note, CreateNotePayload } from "@/types/note";
 
 const API_URL = "https://notehub-public.goit.study/api/notes";
 const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
@@ -9,6 +9,14 @@ const axiosInstance = axios.create({
   baseURL: API_URL,
   headers: { Authorization: `Bearer ${token}` },
 });
+
+export interface FetchNotesResponse {
+  page: number;
+  perPage: number;
+  total: number;
+  totalPages: number;
+  notes: Note[];
+}
 
 export async function fetchNotes(
   search = "",
@@ -54,8 +62,15 @@ export function useCreateNote() {
 
 export function useDeleteNote() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => axiosInstance.delete(`/${id}`).then(() => id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notes"] }),
+  return useMutation<Note, Error, string>({
+    mutationFn: async (id: string) => {
+      const { data }: AxiosResponse<Note> = await axiosInstance.delete<Note>(
+        `/${id}`
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+    },
   });
 }

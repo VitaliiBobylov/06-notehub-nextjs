@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNotes } from "@/lib/api";
 import NoteList from "@/components/NoteList/NoteList";
 import Pagination from "@/components/Pagination/Pagination";
@@ -12,9 +12,22 @@ import css from "./Notes.client.module.css";
 export default function NotesClient() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data, isLoading, error } = useNotes(search, page);
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
+  const { data, isLoading, error } = useNotes(debouncedSearch, page);
 
   if (isLoading) return <p>Loading, please wait...</p>;
   if (error) return <p>Something went wrong: {error.message}</p>;

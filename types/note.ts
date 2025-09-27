@@ -12,11 +12,3 @@ export interface CreateNotePayload {
   content: string;
   tag: Note["tag"];
 }
-
-export interface FetchNotesResponse {
-  page: number;
-  perPage: number;
-  total: number;
-  totalPages: number;
-  notes: Note[];
-}

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { type Note } from "../../types/note";
 import { useDeleteNote } from "../../lib/api";
 import { useQueryClient } from "@tanstack/react-query";
@@ -26,8 +27,12 @@ export default function NoteList({ notes }: NoteListProps) {
     <ul className={css.list}>
       {notes.map((note) => (
         <li key={note.id} className={css.listItem}>
-          <h2 className={css.title}>{note.title}</h2>
+          <Link href={`/notes/${note.id}`} className={css.titleLink}>
+            <h2 className={css.title}>{note.title}</h2>
+          </Link>
+
           <p className={css.content}>{note.content}</p>
+
           <div className={css.footer}>
             <span className={css.tag}>{note.tag}</span>
             <button
